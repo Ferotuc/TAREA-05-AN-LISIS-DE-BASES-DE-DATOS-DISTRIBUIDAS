@@ -1,0 +1,74 @@
+class Nodo:
+    def __init__(self, nombre):
+        self.nombre = nombre
+        self.activo = True
+
+    def caer(self):
+        self.activo = False
+
+    def recuperar(self):
+        self.activo = True
+
+    def estado(self):
+        return "ACTIVO" if self.activo else "CAIDO"
+
+
+class MoveFastCluster:
+    def __init__(self):
+        self.nodos = {
+            "guatemala": Nodo("Guatemala"),
+            "mexico": Nodo("México"),
+            "usa": Nodo("USA")
+        }
+
+    def mostrar_estados(self):
+        print("\n--- ESTADO DE NODOS ---")
+        for clave, nodo in self.nodos.items():
+            print(f"{nodo.nombre}: {nodo.estado()}")
+
+    def procesar_viaje(self, region):
+        nodo = self.nodos.get(region)
+        if nodo and nodo.activo:
+            print(f"✅ Viaje procesado correctamente en {nodo.nombre}")
+        else:
+            print(f"❌ No se puede procesar el viaje en {region.upper()} porque el nodo está caído")
+            print("⚠️  En un sistema CP, se prioriza consistencia y se rechaza temporalmente la operación")
+
+    def caer_nodo(self, region):
+        if region in self.nodos:
+            self.nodos[region].caer()
+            print(f"💥 Nodo {self.nodos[region].nombre} ha caído")
+
+    def recuperar_nodo(self, region):
+        if region in self.nodos:
+            self.nodos[region].recuperar()
+            print(f"🔄 Nodo {self.nodos[region].nombre} recuperado")
+
+
+cluster = MoveFastCluster()
+
+while True:
+    print("\n1. Ver estado de nodos")
+    print("2. Procesar viaje")
+    print("3. Caer nodo")
+    print("4. Recuperar nodo")
+    print("5. Salir")
+
+    opcion = input("Seleccione una opción: ")
+
+    if opcion == "1":
+        cluster.mostrar_estados()
+    elif opcion == "2":
+        region = input("Región (guatemala/mexico/usa): ").lower()
+        cluster.procesar_viaje(region)
+    elif opcion == "3":
+        region = input("Nodo a caer (guatemala/mexico/usa): ").lower()
+        cluster.caer_nodo(region)
+    elif opcion == "4":
+        region = input("Nodo a recuperar (guatemala/mexico/usa): ").lower()
+        cluster.recuperar_nodo(region)
+    elif opcion == "5":
+        print("Saliendo...")
+        break
+    else:
+        print("Opción inválida")
