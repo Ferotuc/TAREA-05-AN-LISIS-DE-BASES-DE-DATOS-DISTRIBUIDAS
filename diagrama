@@ -1,0 +1,54 @@
+flowchart TD
+    U[Usuario App] --> G[API Gateway]
+    D[Conductor App] --> G
+
+    G --> LB[Load Balancer]
+
+    LB --> SG[Servicio de Viajes]
+    LB --> SP[Servicio de Pagos]
+    LB --> SU[Servicio de Ubicación]
+    LB --> ST[Servicio de Tarifas]
+
+    SG --> RG[Región Guatemala]
+    SG --> RM[Región México]
+    SG --> RU[Región USA]
+
+    SP --> RG
+    SP --> RM
+    SP --> RU
+
+    SU --> RG
+    SU --> RM
+    SU --> RU
+
+    ST --> RG
+    ST --> RM
+    ST --> RU
+
+    subgraph RG[Región Guatemala]
+        DBG1[DB Primaria GT]
+        DBGR1[Réplica GT]
+        DBG1 --> DBGR1
+    end
+
+    subgraph RM[Región México]
+        DBM1[DB Primaria MX]
+        DBMR1[Réplica MX]
+        DBM1 --> DBMR1
+    end
+
+    subgraph RU[Región USA]
+        DBU1[DB Primaria USA]
+        DBUR1[Réplica USA]
+        DBU1 --> DBUR1
+    end
+
+    DBG1 -. Replicación asíncrona .-> DBM1
+    DBM1 -. Replicación asíncrona .-> DBU1
+    DBU1 -. Replicación asíncrona .-> DBG1
+
+    MON[Monitor de Fallos / Health Check] --> G
+    MON --> LB
+    MON --> DBG1
+    MON --> DBM1
+    MON --> DBU1
